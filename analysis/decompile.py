@@ -2,11 +2,12 @@ import r2pipe
 import sys
 
 def decompile_binary(binary):
-    r = r2pipe.open(binary)
-    r.cmd("aaa")
-    fcts = r.cmdj("aflj")
+    r2 = r2pipe.open(binary)
+    r2.cmd("aaa")
+    fcts = r2.cmdj("aflj")
     if not fcts:
         print("No functions found or analysis failed :<")
+        r2.quit()
         return
 
     o = f"{binary}de.c"
@@ -15,8 +16,8 @@ def decompile_binary(binary):
             name = fct.get("name", "unknown")
             addr = fct.get("addr", 0)
             f.write(f"/* Function {name} at 0x{addr:x} */\n")
-            r.cmd(f"s 0x{addr:x}")
-            decompiled = r.cmd("pdg")
+            r2.cmd(f"s 0x{addr:x}")
+            decompiled = r2.cmd("pdg")
             f.write(decompiled if decompiled else "/* Failed to decompiled function */\n")
 
 if __name__ == "__main__":
